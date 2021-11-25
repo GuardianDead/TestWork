@@ -46,7 +46,6 @@ namespace TestWork
             this.label5 = new System.Windows.Forms.Label();
             this.button_Create_Supply = new System.Windows.Forms.Button();
             this.button_Change_Suplly = new System.Windows.Forms.Button();
-            this.listBox_Preview = new System.Windows.Forms.ListBox();
             this.listBox_Includes = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -67,6 +66,7 @@ namespace TestWork
             this.button_Delete_Addon = new System.Windows.Forms.Button();
             this.button_Change_Addon = new System.Windows.Forms.Button();
             this.button_Add_Addon = new System.Windows.Forms.Button();
+            this.richTextBox_Preview = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -164,6 +164,7 @@ namespace TestWork
             this.textBox_Supply_Probability.Name = "textBox_Supply_Probability";
             this.textBox_Supply_Probability.Size = new System.Drawing.Size(153, 27);
             this.textBox_Supply_Probability.TabIndex = 13;
+            this.textBox_Supply_Probability.TextChanged += new System.EventHandler(this.textBox_Supply_Probability_TextChanged);
             // 
             // label4
             // 
@@ -176,6 +177,7 @@ namespace TestWork
             // 
             // textBox_Supply_Condition
             // 
+            this.textBox_Supply_Condition.Enabled = false;
             this.textBox_Supply_Condition.Location = new System.Drawing.Point(265, 219);
             this.textBox_Supply_Condition.Name = "textBox_Supply_Condition";
             this.textBox_Supply_Condition.Size = new System.Drawing.Size(153, 27);
@@ -209,15 +211,6 @@ namespace TestWork
             this.button_Change_Suplly.Text = "Изменить";
             this.button_Change_Suplly.UseVisualStyleBackColor = true;
             this.button_Change_Suplly.Click += new System.EventHandler(this.button_Change_Suplly_Click);
-            // 
-            // listBox_Preview
-            // 
-            this.listBox_Preview.FormattingEnabled = true;
-            this.listBox_Preview.ItemHeight = 20;
-            this.listBox_Preview.Location = new System.Drawing.Point(423, 60);
-            this.listBox_Preview.Name = "listBox_Preview";
-            this.listBox_Preview.Size = new System.Drawing.Size(389, 804);
-            this.listBox_Preview.TabIndex = 19;
             // 
             // listBox_Includes
             // 
@@ -301,7 +294,7 @@ namespace TestWork
             this.файлToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(824, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(976, 28);
             this.menuStrip1.TabIndex = 29;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -401,11 +394,20 @@ namespace TestWork
             this.button_Add_Addon.UseVisualStyleBackColor = true;
             this.button_Add_Addon.Click += new System.EventHandler(this.button_Add_Addon_Click);
             // 
+            // richTextBox_Preview
+            // 
+            this.richTextBox_Preview.Location = new System.Drawing.Point(426, 59);
+            this.richTextBox_Preview.Name = "richTextBox_Preview";
+            this.richTextBox_Preview.Size = new System.Drawing.Size(538, 798);
+            this.richTextBox_Preview.TabIndex = 37;
+            this.richTextBox_Preview.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(824, 869);
+            this.ClientSize = new System.Drawing.Size(976, 869);
+            this.Controls.Add(this.richTextBox_Preview);
             this.Controls.Add(this.button_Delete_Addon);
             this.Controls.Add(this.button_Change_Addon);
             this.Controls.Add(this.button_Add_Addon);
@@ -421,7 +423,6 @@ namespace TestWork
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.listBox_Includes);
-            this.Controls.Add(this.listBox_Preview);
             this.Controls.Add(this.button_Change_Suplly);
             this.Controls.Add(this.button_Create_Supply);
             this.Controls.Add(this.textBox_Supply_Condition);
@@ -469,7 +470,6 @@ namespace TestWork
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button_Create_Supply;
         private System.Windows.Forms.Button button_Change_Suplly;
-        private System.Windows.Forms.ListBox listBox_Preview;
         private System.Windows.Forms.ListBox listBox_Includes;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
@@ -490,6 +490,7 @@ namespace TestWork
         private System.Windows.Forms.Button button_Delete_Addon;
         private System.Windows.Forms.Button button_Change_Addon;
         private System.Windows.Forms.Button button_Add_Addon;
+        private System.Windows.Forms.RichTextBox richTextBox_Preview;
     }
 }
 

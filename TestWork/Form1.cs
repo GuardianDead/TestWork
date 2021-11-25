@@ -14,7 +14,6 @@ namespace TestWork
         private Character _selectedCharacter { get => _dataCharacters.Single(character => character.Id == comboBox_Selected_Character.SelectedItem.ToString()); }
         private Supply _selectedSupply { get => _selectedCharacter.Supplies.Items.Single(item => item.Name == listBox_Supplies.SelectedItem.ToString()); }
 
-        private readonly SuppliesCharactersXMLParser _characterXMLParser = new SuppliesCharactersXMLParser();
         private string _currentFilePath;
 
         public Form1()
@@ -32,7 +31,7 @@ namespace TestWork
 
             _currentFilePath = openFileDialog1.FileName;
             CleanDataCharactersAndControllers();
-            _dataCharacters.AddRange(_characterXMLParser.ReadFile(_currentFilePath));
+            _dataCharacters.AddRange(SuppliesCharactersParser.ReadFile(_currentFilePath));
             ReFillCharacters(_dataCharacters);
             if (_dataCharacters.Count != 0)
             {
@@ -46,7 +45,7 @@ namespace TestWork
                 MessageBox.Show("Файл еще не был загружен", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            _characterXMLParser.SaveInSameFile(_currentFilePath, _dataCharacters.ToArray());
+            SuppliesCharactersParser.SaveInSameFile(_currentFilePath, _dataCharacters.ToArray());
             MessageBox.Show("Данные успешно сохранены", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         private void сохранитьКакToolStripMenuItem_Click(object sender, EventArgs e)
@@ -55,7 +54,7 @@ namespace TestWork
                 return;
 
             _currentFilePath = saveFileDialog1.FileName;
-            _characterXMLParser.SaveFile(_currentFilePath, _dataCharacters.ToArray());
+            SuppliesCharactersParser.SaveFile(_currentFilePath, _dataCharacters.ToArray());
             MessageBox.Show("Данные успешно сохранены", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         #endregion
@@ -67,7 +66,7 @@ namespace TestWork
             if (listBox_Supplies.Items.Count != 0)
                 listBox_Supplies.SelectedIndex = 0;
             ReFillIncludes(_selectedCharacter.Supplies.Includes);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
         }
         private void listBox_Supplies_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -79,11 +78,17 @@ namespace TestWork
         }
         private void listBox_Addons_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox_Addon_Name.Text = listBox_Addons.SelectedItem.ToString() ?? "";
+            textBox_Addon_Name.Text = listBox_Addons.SelectedItem?.ToString() ?? "";
         }
         private void listBox_Includes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox_Include.Text = listBox_Includes.SelectedItem.ToString() ?? "";
+            textBox_Include.Text = listBox_Includes.SelectedItem?.ToString() ?? "";
+        }
+        private void textBox_Supply_Probability_TextChanged(object sender, EventArgs e)
+        {
+            textBox_Supply_Condition.Enabled = !string.IsNullOrEmpty(textBox_Supply_Probability.Text);
+            if (string.IsNullOrEmpty(textBox_Supply_Probability.Text))
+                textBox_Supply_Condition.Text = string.Empty;
         }
         #endregion
 
@@ -108,20 +113,20 @@ namespace TestWork
             listBox_Addons.Items.Clear();
             listBox_Addons.Items.AddRange(addons.ToArray());
         }
-        private void ReFillPreview(Supplies supplies)
+        private void ReFillPreview(Character character)
         {
-            listBox_Preview.Items.Clear();
-            listBox_Preview.Items.Add(@$"[{supplies.Spawn}] \n");
-            foreach (var supplyItem in supplies.Items)
+            richTextBox_Preview.Text = "[spawn] \\n" + Environment.NewLine;
+            foreach (var item in character.Supplies.Items)
             {
-                if (supplyItem.Addons.Count() != 0)
-                    listBox_Preview.Items.Add(@$"{string.Join(", ", $"{supplyItem.Name} = {supplyItem.Count}", string.Join(", ", supplyItem.Addons), @$"cond={supplyItem.Condition}", @$"prob={supplyItem.Probability}")} \n");
-                else
-                    listBox_Preview.Items.Add(@$"{string.Join(", ", $"{supplyItem.Name} = {supplyItem.Count}", $"cond={supplyItem.Condition}", $"prob={supplyItem.Probability}")} \n");
+                richTextBox_Preview.Text += $"{item.Name} = {item.Count}";
+                if (item.Addons.Count != 0) richTextBox_Preview.Text += $", {string.Join(", ", item.Addons)}";
+                if (item.Probability is not null) richTextBox_Preview.Text += $", prob={item.Probability} ";
+                if (item.Condition is not null) richTextBox_Preview.Text += $", cond={item.Condition} ";
+                richTextBox_Preview.Text += " \\n" + Environment.NewLine;
             }
-            foreach (var include in supplies.Includes)
+            foreach (var include in character.Supplies.Includes)
             {
-                listBox_Preview.Items.Add(@$"#include '{include}' \n".Replace("'", '"'.ToString()));
+                richTextBox_Preview.Text += $"#include \"{include}\"" + Environment.NewLine;
             }
         }
         private void CleanDataCharactersAndControllers()
@@ -162,9 +167,15 @@ namespace TestWork
                 return;
             }
 
-            _selectedCharacter.Supplies.Items.Add(newSupply);
+            var selectedIndexListBox = listBox_Supplies.SelectedIndex == -1 ? 0 : listBox_Supplies.SelectedIndex;
+            var selectedItem = _selectedCharacter.Supplies.Items.SingleOrDefault(supply => supply.Name == listBox_Supplies.SelectedItem.ToString());
+            if (selectedItem is not null)
+                _selectedCharacter.Supplies.Items.Insert(_selectedCharacter.Supplies.Items.IndexOf(selectedItem), newSupply);
+            else
+                _selectedCharacter.Supplies.Items.Add(newSupply);
             ReFillSupplies(_selectedCharacter.Supplies.Items.Select(supply => supply.Name));
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Supplies.SelectedIndex = selectedIndexListBox;
         }
         private void button_Change_Suplly_Click(object sender, EventArgs e)
         {
@@ -198,9 +209,11 @@ namespace TestWork
                 return;
             }
 
+            var selectedIndexListBox = listBox_Supplies.SelectedIndex;
             _selectedCharacter.Supplies.Items[oldSupplyIndex] = newSupply;
             ReFillSupplies(_selectedCharacter.Supplies.Items.Select(item => item.Name));
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Supplies.SelectedIndex = selectedIndexListBox;
         }
         private void button_Delete_Supply_Click(object sender, EventArgs e)
         {
@@ -210,12 +223,12 @@ namespace TestWork
                 return;
             }
 
-            var deletedSupplyName = textBox_Supply_Name.Text;
-            if (deletedSupplyName == "")
+            if (listBox_Supplies.SelectedIndex == -1)
             {
-                MessageBox.Show("Поле имени предмета незаполнено", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Предмет для удаления не выбран", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            var deletedSupplyName = listBox_Supplies.SelectedItem.ToString();
             var recivedSupply = _selectedCharacter.Supplies.Items.SingleOrDefault(item => item.Name == deletedSupplyName);
             if (recivedSupply is null)
             {
@@ -223,10 +236,13 @@ namespace TestWork
                 return;
             }
 
+            var selectedIndexListBox = listBox_Supplies.Items.Count == listBox_Supplies.SelectedIndex + 1 ? 0 : listBox_Supplies.SelectedIndex;
+            selectedIndexListBox = listBox_Supplies.Items.Count == 1 ? -1 : selectedIndexListBox;
             var recivedRemoveSupply = _selectedCharacter.Supplies.Items.SingleOrDefault(item => item.Name == deletedSupplyName);
             _selectedCharacter.Supplies.Items.Remove(recivedRemoveSupply);
             ReFillSupplies(_selectedCharacter.Supplies.Items.Select(item => item.Name));
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Supplies.SelectedIndex = selectedIndexListBox;
         }
 
         private Supply CreateSupplyFromInputs()
@@ -234,29 +250,56 @@ namespace TestWork
             var addons = new List<string>();
             foreach (var addon in listBox_Addons.Items)
                 addons.Add(addon.ToString());
-            var supply = new Supply(
+            if (!string.IsNullOrEmpty(textBox_Supply_Probability.Text) && !string.IsNullOrEmpty(textBox_Supply_Condition.Text))
+            {
+                var supply = new Supply(
                     textBox_Supply_Name.Text,
                     addons,
-                    Convert.ToInt32(textBox_Supply_Count.Text),
                     Convert.ToDouble(textBox_Supply_Condition.Text.Replace('.', ',')),
-                    Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ','))
+                    Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ',')),
+                    Convert.ToInt32(textBox_Supply_Count.Text)
                 );
-            return supply;
+                return supply;
+            }
+            else
+            {
+                var supply = new Supply(
+                    textBox_Supply_Name.Text,
+                    addons,
+                    null,
+                    null,
+                    Convert.ToInt32(textBox_Supply_Count.Text)
+                );
+                return supply;
+            }
         }
         private bool CheckInputsForSupply()
         {
-            if (textBox_Supply_Name.Text == "" || textBox_Supply_Count.Text == ""
-                || textBox_Supply_Condition.Text == "" || textBox_Supply_Probability.Text == "")
+            if (string.IsNullOrEmpty(textBox_Supply_Probability.Text))
             {
-                MessageBox.Show("Не все данные для предмета заполнены", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
+                if (!string.IsNullOrEmpty(textBox_Supply_Condition.Text))
+                {
+                    MessageBox.Show("Параметр 'Шанс выпадения' должен быть заполнен в соответствии с параметром 'Состояние'", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(textBox_Supply_Condition.Text))
+                {
+                    MessageBox.Show("Параметр 'Состояние' должен быть заполнен в соответствии с параметром 'Шанс выпадения'", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
             }
 
             try
             {
                 Convert.ToInt32(textBox_Supply_Count.Text);
-                Convert.ToDouble(textBox_Supply_Condition.Text.Replace('.', ','));
-                Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ','));
+                if (!string.IsNullOrEmpty(textBox_Supply_Probability.Text) && !string.IsNullOrEmpty(textBox_Supply_Condition.Text))
+                {
+                    Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ','));
+                    Convert.ToDouble(textBox_Supply_Condition.Text.Replace('.', ','));
+                }
             }
             catch
             {
@@ -289,15 +332,21 @@ namespace TestWork
                 return;
             }
 
-            _selectedSupply.Addons.Add(addonName);
+            var selectedIndexListBox = listBox_Addons.SelectedIndex == -1 ? 0 : listBox_Addons.SelectedIndex;
+            var selectedItem = _selectedSupply.Addons.SingleOrDefault(addon => addon == listBox_Addons.SelectedItem.ToString());
+            if (selectedItem is not null)
+                _selectedSupply.Addons.Insert(_selectedSupply.Addons.IndexOf(selectedItem), addonName);
+            else
+                _selectedSupply.Addons.Add(addonName);
             ReFillAddons(_selectedSupply.Addons);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Addons.SelectedIndex = selectedIndexListBox;
         }
         private void button_Change_Addon_Click(object sender, EventArgs e)
         {
             if (listBox_Supplies.SelectedIndex == -1)
             {
-                MessageBox.Show("Предмет для добавления аддона не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Предмет для изменения аддона не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -320,9 +369,11 @@ namespace TestWork
                 return;
             }
 
+            var selectedIndexListBox = listBox_Addons.SelectedIndex;
             _selectedSupply.Addons[selectedAddonIndex] = addonName;
             ReFillAddons(_selectedSupply.Addons);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Addons.SelectedIndex = selectedIndexListBox;
         }
         private void button_Delete_Addon_Click(object sender, EventArgs e)
         {
@@ -331,22 +382,28 @@ namespace TestWork
                 MessageBox.Show("Предмет для удаления аддона не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var addonName = textBox_Addon_Name.Text;
-            if (addonName == "")
+
+            if (listBox_Addons.SelectedIndex == -1)
             {
-                MessageBox.Show("Поле для имени аддона не заполнено", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Аддон для удаления не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
+            var addonName = listBox_Addons.SelectedItem.ToString();
             if (!_selectedSupply.Addons.Any(addon => addon == addonName))
             {
                 MessageBox.Show("Данного аддона нет у предмета", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            var selectedIndexListBox = listBox_Addons.Items.Count == listBox_Addons.SelectedIndex + 1 ? 0 : listBox_Addons.SelectedIndex;
+            selectedIndexListBox = listBox_Addons.Items.Count == 1 ? -1 : selectedIndexListBox;
+            var recivedRemoveSupply = _selectedSupply.Addons.SingleOrDefault(addon => addon == addonName);
             _selectedSupply.Addons.Remove(addonName);
             ReFillAddons(_selectedSupply.Addons);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Addons.SelectedIndex = selectedIndexListBox;
+            textBox_Addon_Name.Text = string.Empty;
+            textBox_Addon_Name.Text = listBox_Addons.SelectedIndex != -1 ? listBox_Addons.SelectedItem.ToString() : "";
         }
         #endregion
 
@@ -371,9 +428,15 @@ namespace TestWork
                 return;
             }
 
-            _selectedCharacter.Supplies.Includes.Add(includePath);
+            var selectedIndexListBox = listBox_Includes.SelectedIndex == -1 ? 0 : listBox_Includes.SelectedIndex;
+            var selectedItem = _selectedCharacter.Supplies.Includes.SingleOrDefault(include => include == listBox_Includes.SelectedItem.ToString());
+            if (selectedItem is not null)
+                _selectedCharacter.Supplies.Includes.Insert(_selectedCharacter.Supplies.Includes.IndexOf(selectedItem), includePath);
+            else
+                _selectedCharacter.Supplies.Includes.Add(includePath);
             ReFillIncludes(_selectedCharacter.Supplies.Includes);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Includes.SelectedIndex = selectedIndexListBox;
         }
         private void button_Change_Include_Click(object sender, EventArgs e)
         {
@@ -402,9 +465,11 @@ namespace TestWork
                 return;
             }
 
+            var selectedIndexListBox = listBox_Includes.SelectedIndex;
             _selectedCharacter.Supplies.Includes[selectedIncludeIndex] = includePath;
             ReFillIncludes(_selectedCharacter.Supplies.Includes);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Includes.SelectedIndex = selectedIncludeIndex;
         }
         private void button_Delete_Include_Click(object sender, EventArgs e)
         {
@@ -414,21 +479,26 @@ namespace TestWork
                 return;
             }
 
-            var includePath = textBox_Include.Text;
-            if (includePath == "")
+            if (listBox_Includes.SelectedIndex == -1)
             {
-                MessageBox.Show("Поле для пути модуля не заполнено", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Путь модуля не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            var includePath = listBox_Includes.SelectedItem.ToString();
             if (!_selectedCharacter.Supplies.Includes.Any(include => include == includePath))
             {
                 MessageBox.Show("Данного модуля не существует", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            var selectedIndexListBox = listBox_Includes.Items.Count == listBox_Includes.SelectedIndex + 1 ? 0 : listBox_Includes.SelectedIndex;
+            selectedIndexListBox = listBox_Includes.Items.Count == 1 ? -1 : selectedIndexListBox;
+            var recivedRemoveSupply = _selectedCharacter.Supplies.Includes.SingleOrDefault(include => include == includePath);
             _selectedCharacter.Supplies.Includes.Remove(includePath);
             ReFillIncludes(_selectedCharacter.Supplies.Includes);
-            ReFillPreview(_selectedCharacter.Supplies);
+            ReFillPreview(_selectedCharacter);
+            listBox_Includes.SelectedIndex = selectedIndexListBox;
+            textBox_Include.Text = listBox_Includes.SelectedIndex != -1 ? listBox_Includes.SelectedItem.ToString() : "";
         }
         #endregion
     }

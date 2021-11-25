@@ -7,10 +7,10 @@ namespace TestWorkLibrary.Models
         public string Name { get; set; }
         public int Count { get; set; }
         public List<string> Addons { get; set; }
-        public double Condition { get; set; }
-        public double Probability { get; set; }
+        public double? Condition { get; set; }
+        public double? Probability { get; set; }
 
-        public Supply(string name, List<string> addons, int count = 1, double condition = 0.0, double probability = 0.0)
+        public Supply(string name, List<string> addons, double? probability, double? condition, int count = 1)
         {
             Name = name;
             Addons = addons;
