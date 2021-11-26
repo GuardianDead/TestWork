@@ -67,6 +67,8 @@ namespace TestWork
             this.button_Change_Addon = new System.Windows.Forms.Button();
             this.button_Add_Addon = new System.Windows.Forms.Button();
             this.richTextBox_Preview = new System.Windows.Forms.RichTextBox();
+            this.checkBox_Supply_Probability = new System.Windows.Forms.CheckBox();
+            this.checkBox_Supply_Condition = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -120,7 +122,7 @@ namespace TestWork
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(423, 37);
+            this.label1.Location = new System.Drawing.Point(478, 36);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(170, 20);
             this.label1.TabIndex = 7;
@@ -139,7 +141,7 @@ namespace TestWork
             // 
             this.textBox_Supply_Name.Location = new System.Drawing.Point(265, 60);
             this.textBox_Supply_Name.Name = "textBox_Supply_Name";
-            this.textBox_Supply_Name.Size = new System.Drawing.Size(153, 27);
+            this.textBox_Supply_Name.Size = new System.Drawing.Size(207, 27);
             this.textBox_Supply_Name.TabIndex = 9;
             // 
             // label3
@@ -155,38 +157,36 @@ namespace TestWork
             // 
             this.textBox_Supply_Count.Location = new System.Drawing.Point(264, 113);
             this.textBox_Supply_Count.Name = "textBox_Supply_Count";
-            this.textBox_Supply_Count.Size = new System.Drawing.Size(154, 27);
+            this.textBox_Supply_Count.Size = new System.Drawing.Size(208, 27);
             this.textBox_Supply_Count.TabIndex = 11;
             // 
             // textBox_Supply_Probability
             // 
             this.textBox_Supply_Probability.Location = new System.Drawing.Point(265, 166);
             this.textBox_Supply_Probability.Name = "textBox_Supply_Probability";
-            this.textBox_Supply_Probability.Size = new System.Drawing.Size(153, 27);
+            this.textBox_Supply_Probability.Size = new System.Drawing.Size(38, 27);
             this.textBox_Supply_Probability.TabIndex = 13;
-            this.textBox_Supply_Probability.TextChanged += new System.EventHandler(this.textBox_Supply_Probability_TextChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(264, 143);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(156, 20);
+            this.label4.Size = new System.Drawing.Size(203, 20);
             this.label4.TabIndex = 12;
-            this.label4.Text = "Шанс выпад. (0.0-1.0)";
+            this.label4.Text = "Шанс выпададения (0.0-1.0)";
             // 
             // textBox_Supply_Condition
             // 
-            this.textBox_Supply_Condition.Enabled = false;
-            this.textBox_Supply_Condition.Location = new System.Drawing.Point(265, 219);
+            this.textBox_Supply_Condition.Location = new System.Drawing.Point(263, 223);
             this.textBox_Supply_Condition.Name = "textBox_Supply_Condition";
-            this.textBox_Supply_Condition.Size = new System.Drawing.Size(153, 27);
+            this.textBox_Supply_Condition.Size = new System.Drawing.Size(40, 27);
             this.textBox_Supply_Condition.TabIndex = 15;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(265, 196);
+            this.label5.Location = new System.Drawing.Point(263, 200);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(141, 20);
             this.label5.TabIndex = 14;
@@ -194,9 +194,9 @@ namespace TestWork
             // 
             // button_Create_Supply
             // 
-            this.button_Create_Supply.Location = new System.Drawing.Point(264, 252);
+            this.button_Create_Supply.Location = new System.Drawing.Point(263, 258);
             this.button_Create_Supply.Name = "button_Create_Supply";
-            this.button_Create_Supply.Size = new System.Drawing.Size(154, 37);
+            this.button_Create_Supply.Size = new System.Drawing.Size(207, 37);
             this.button_Create_Supply.TabIndex = 17;
             this.button_Create_Supply.Text = "Создать";
             this.button_Create_Supply.UseVisualStyleBackColor = true;
@@ -204,9 +204,9 @@ namespace TestWork
             // 
             // button_Change_Suplly
             // 
-            this.button_Change_Suplly.Location = new System.Drawing.Point(264, 295);
+            this.button_Change_Suplly.Location = new System.Drawing.Point(263, 301);
             this.button_Change_Suplly.Name = "button_Change_Suplly";
-            this.button_Change_Suplly.Size = new System.Drawing.Size(154, 37);
+            this.button_Change_Suplly.Size = new System.Drawing.Size(207, 37);
             this.button_Change_Suplly.TabIndex = 18;
             this.button_Change_Suplly.Text = "Изменить";
             this.button_Change_Suplly.UseVisualStyleBackColor = true;
@@ -216,16 +216,16 @@ namespace TestWork
             // 
             this.listBox_Includes.FormattingEnabled = true;
             this.listBox_Includes.ItemHeight = 20;
-            this.listBox_Includes.Location = new System.Drawing.Point(12, 597);
+            this.listBox_Includes.Location = new System.Drawing.Point(10, 604);
             this.listBox_Includes.Name = "listBox_Includes";
-            this.listBox_Includes.Size = new System.Drawing.Size(405, 164);
+            this.listBox_Includes.Size = new System.Drawing.Size(456, 164);
             this.listBox_Includes.TabIndex = 20;
             this.listBox_Includes.SelectedIndexChanged += new System.EventHandler(this.listBox_Includes_SelectedIndexChanged);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(10, 574);
+            this.label6.Location = new System.Drawing.Point(8, 581);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(174, 20);
             this.label6.TabIndex = 21;
@@ -234,7 +234,7 @@ namespace TestWork
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(10, 764);
+            this.label7.Location = new System.Drawing.Point(8, 771);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(117, 20);
             this.label7.TabIndex = 22;
@@ -242,16 +242,16 @@ namespace TestWork
             // 
             // textBox_Include
             // 
-            this.textBox_Include.Location = new System.Drawing.Point(12, 787);
+            this.textBox_Include.Location = new System.Drawing.Point(10, 794);
             this.textBox_Include.Name = "textBox_Include";
-            this.textBox_Include.Size = new System.Drawing.Size(405, 27);
+            this.textBox_Include.Size = new System.Drawing.Size(456, 27);
             this.textBox_Include.TabIndex = 23;
             // 
             // button_Add_Include
             // 
-            this.button_Add_Include.Location = new System.Drawing.Point(12, 820);
+            this.button_Add_Include.Location = new System.Drawing.Point(10, 827);
             this.button_Add_Include.Name = "button_Add_Include";
-            this.button_Add_Include.Size = new System.Drawing.Size(137, 37);
+            this.button_Add_Include.Size = new System.Drawing.Size(145, 37);
             this.button_Add_Include.TabIndex = 24;
             this.button_Add_Include.Text = "Создать";
             this.button_Add_Include.UseVisualStyleBackColor = true;
@@ -259,9 +259,9 @@ namespace TestWork
             // 
             // button_Delete_Supply
             // 
-            this.button_Delete_Supply.Location = new System.Drawing.Point(264, 338);
+            this.button_Delete_Supply.Location = new System.Drawing.Point(263, 344);
             this.button_Delete_Supply.Name = "button_Delete_Supply";
-            this.button_Delete_Supply.Size = new System.Drawing.Size(154, 37);
+            this.button_Delete_Supply.Size = new System.Drawing.Size(207, 37);
             this.button_Delete_Supply.TabIndex = 25;
             this.button_Delete_Supply.Text = "Удалить";
             this.button_Delete_Supply.UseVisualStyleBackColor = true;
@@ -269,9 +269,9 @@ namespace TestWork
             // 
             // button_Change_Include
             // 
-            this.button_Change_Include.Location = new System.Drawing.Point(155, 820);
+            this.button_Change_Include.Location = new System.Drawing.Point(161, 826);
             this.button_Change_Include.Name = "button_Change_Include";
-            this.button_Change_Include.Size = new System.Drawing.Size(124, 37);
+            this.button_Change_Include.Size = new System.Drawing.Size(153, 37);
             this.button_Change_Include.TabIndex = 26;
             this.button_Change_Include.Text = "Изменить";
             this.button_Change_Include.UseVisualStyleBackColor = true;
@@ -279,9 +279,9 @@ namespace TestWork
             // 
             // button_Delete_Include
             // 
-            this.button_Delete_Include.Location = new System.Drawing.Point(285, 820);
+            this.button_Delete_Include.Location = new System.Drawing.Point(320, 826);
             this.button_Delete_Include.Name = "button_Delete_Include";
-            this.button_Delete_Include.Size = new System.Drawing.Size(132, 37);
+            this.button_Delete_Include.Size = new System.Drawing.Size(146, 37);
             this.button_Delete_Include.TabIndex = 27;
             this.button_Delete_Include.Text = "Удалить";
             this.button_Delete_Include.UseVisualStyleBackColor = true;
@@ -333,7 +333,7 @@ namespace TestWork
             // 
             this.listBox_Addons.FormattingEnabled = true;
             this.listBox_Addons.ItemHeight = 20;
-            this.listBox_Addons.Location = new System.Drawing.Point(12, 403);
+            this.listBox_Addons.Location = new System.Drawing.Point(10, 410);
             this.listBox_Addons.Name = "listBox_Addons";
             this.listBox_Addons.Size = new System.Drawing.Size(243, 164);
             this.listBox_Addons.TabIndex = 30;
@@ -342,7 +342,7 @@ namespace TestWork
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(10, 380);
+            this.label8.Location = new System.Drawing.Point(8, 387);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(135, 20);
             this.label8.TabIndex = 31;
@@ -351,7 +351,7 @@ namespace TestWork
             // label_Addon
             // 
             this.label_Addon.AutoSize = true;
-            this.label_Addon.Location = new System.Drawing.Point(261, 392);
+            this.label_Addon.Location = new System.Drawing.Point(259, 395);
             this.label_Addon.Name = "label_Addon";
             this.label_Addon.Size = new System.Drawing.Size(131, 20);
             this.label_Addon.TabIndex = 32;
@@ -359,16 +359,16 @@ namespace TestWork
             // 
             // textBox_Addon_Name
             // 
-            this.textBox_Addon_Name.Location = new System.Drawing.Point(264, 415);
+            this.textBox_Addon_Name.Location = new System.Drawing.Point(262, 418);
             this.textBox_Addon_Name.Name = "textBox_Addon_Name";
-            this.textBox_Addon_Name.Size = new System.Drawing.Size(153, 27);
+            this.textBox_Addon_Name.Size = new System.Drawing.Size(206, 27);
             this.textBox_Addon_Name.TabIndex = 33;
             // 
             // button_Delete_Addon
             // 
-            this.button_Delete_Addon.Location = new System.Drawing.Point(263, 534);
+            this.button_Delete_Addon.Location = new System.Drawing.Point(261, 537);
             this.button_Delete_Addon.Name = "button_Delete_Addon";
-            this.button_Delete_Addon.Size = new System.Drawing.Size(154, 37);
+            this.button_Delete_Addon.Size = new System.Drawing.Size(207, 37);
             this.button_Delete_Addon.TabIndex = 36;
             this.button_Delete_Addon.Text = "Удалить";
             this.button_Delete_Addon.UseVisualStyleBackColor = true;
@@ -376,9 +376,9 @@ namespace TestWork
             // 
             // button_Change_Addon
             // 
-            this.button_Change_Addon.Location = new System.Drawing.Point(263, 491);
+            this.button_Change_Addon.Location = new System.Drawing.Point(261, 494);
             this.button_Change_Addon.Name = "button_Change_Addon";
-            this.button_Change_Addon.Size = new System.Drawing.Size(154, 37);
+            this.button_Change_Addon.Size = new System.Drawing.Size(207, 37);
             this.button_Change_Addon.TabIndex = 35;
             this.button_Change_Addon.Text = "Изменить";
             this.button_Change_Addon.UseVisualStyleBackColor = true;
@@ -386,9 +386,9 @@ namespace TestWork
             // 
             // button_Add_Addon
             // 
-            this.button_Add_Addon.Location = new System.Drawing.Point(263, 448);
+            this.button_Add_Addon.Location = new System.Drawing.Point(261, 451);
             this.button_Add_Addon.Name = "button_Add_Addon";
-            this.button_Add_Addon.Size = new System.Drawing.Size(154, 37);
+            this.button_Add_Addon.Size = new System.Drawing.Size(207, 37);
             this.button_Add_Addon.TabIndex = 34;
             this.button_Add_Addon.Text = "Добавить";
             this.button_Add_Addon.UseVisualStyleBackColor = true;
@@ -396,17 +396,41 @@ namespace TestWork
             // 
             // richTextBox_Preview
             // 
-            this.richTextBox_Preview.Location = new System.Drawing.Point(426, 59);
+            this.richTextBox_Preview.Location = new System.Drawing.Point(478, 59);
             this.richTextBox_Preview.Name = "richTextBox_Preview";
-            this.richTextBox_Preview.Size = new System.Drawing.Size(538, 798);
+            this.richTextBox_Preview.Size = new System.Drawing.Size(486, 804);
             this.richTextBox_Preview.TabIndex = 37;
             this.richTextBox_Preview.Text = "";
+            // 
+            // checkBox_Supply_Probability
+            // 
+            this.checkBox_Supply_Probability.AutoSize = true;
+            this.checkBox_Supply_Probability.Location = new System.Drawing.Point(309, 168);
+            this.checkBox_Supply_Probability.Name = "checkBox_Supply_Probability";
+            this.checkBox_Supply_Probability.Size = new System.Drawing.Size(163, 24);
+            this.checkBox_Supply_Probability.TabIndex = 38;
+            this.checkBox_Supply_Probability.Text = "Учитывать в файле";
+            this.checkBox_Supply_Probability.UseVisualStyleBackColor = true;
+            this.checkBox_Supply_Probability.CheckedChanged += new System.EventHandler(this.checkBox_Supply_Probability_CheckedChanged);
+            // 
+            // checkBox_Supply_Condition
+            // 
+            this.checkBox_Supply_Condition.AutoSize = true;
+            this.checkBox_Supply_Condition.Location = new System.Drawing.Point(309, 226);
+            this.checkBox_Supply_Condition.Name = "checkBox_Supply_Condition";
+            this.checkBox_Supply_Condition.Size = new System.Drawing.Size(163, 24);
+            this.checkBox_Supply_Condition.TabIndex = 39;
+            this.checkBox_Supply_Condition.Text = "Учитывать в файле";
+            this.checkBox_Supply_Condition.UseVisualStyleBackColor = true;
+            this.checkBox_Supply_Condition.CheckedChanged += new System.EventHandler(this.checkBox_Supply_Condition_CheckedChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(976, 869);
+            this.ClientSize = new System.Drawing.Size(976, 873);
+            this.Controls.Add(this.checkBox_Supply_Condition);
+            this.Controls.Add(this.checkBox_Supply_Probability);
             this.Controls.Add(this.richTextBox_Preview);
             this.Controls.Add(this.button_Delete_Addon);
             this.Controls.Add(this.button_Change_Addon);
@@ -491,6 +515,8 @@ namespace TestWork
         private System.Windows.Forms.Button button_Change_Addon;
         private System.Windows.Forms.Button button_Add_Addon;
         private System.Windows.Forms.RichTextBox richTextBox_Preview;
+        private System.Windows.Forms.CheckBox checkBox_Supply_Probability;
+        private System.Windows.Forms.CheckBox checkBox_Supply_Condition;
     }
 }
 

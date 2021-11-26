@@ -25,18 +25,14 @@ namespace TestWork
         private void загрузитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() != DialogResult.OK)
-            {
                 return;
-            }
 
             _currentFilePath = openFileDialog1.FileName;
             CleanDataCharactersAndControllers();
             _dataCharacters.AddRange(SuppliesCharactersParser.ReadFile(_currentFilePath));
             ReFillCharacters(_dataCharacters);
             if (_dataCharacters.Count != 0)
-            {
                 comboBox_Selected_Character.SelectedIndex = 0;
-            }
         }
         private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -59,7 +55,7 @@ namespace TestWork
         }
         #endregion
 
-        #region События выбранных данных в listBox-ах и comboBox
+        #region Различные события элементов
         private void comboBox_Selected_Character_SelectedIndexChanged(object sender, EventArgs e)
         {
             ReFillSupplies(_selectedCharacter.Supplies.Items.Select(item => item.Name));
@@ -73,8 +69,10 @@ namespace TestWork
             ReFillAddons(_selectedSupply.Addons);
             textBox_Supply_Name.Text = _selectedSupply.Name;
             textBox_Supply_Count.Text = _selectedSupply.Count.ToString();
-            textBox_Supply_Condition.Text = _selectedSupply.Condition.ToString();
-            textBox_Supply_Probability.Text = _selectedSupply.Probability.ToString();
+            textBox_Supply_Condition.Text = _selectedSupply.Condition.ToString().Replace(',', '.');
+            textBox_Supply_Probability.Text = _selectedSupply.Probability.ToString().Replace(',', '.');
+            checkBox_Supply_Condition.Checked = _selectedSupply.HasFillCondition;
+            checkBox_Supply_Probability.Checked = _selectedSupply.HasFillProbability;
         }
         private void listBox_Addons_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -84,19 +82,23 @@ namespace TestWork
         {
             textBox_Include.Text = listBox_Includes.SelectedItem?.ToString() ?? "";
         }
-        private void textBox_Supply_Probability_TextChanged(object sender, EventArgs e)
+        private void checkBox_Supply_Probability_CheckedChanged(object sender, EventArgs e)
         {
-            textBox_Supply_Condition.Enabled = !string.IsNullOrEmpty(textBox_Supply_Probability.Text);
-            if (string.IsNullOrEmpty(textBox_Supply_Probability.Text))
-                textBox_Supply_Condition.Text = string.Empty;
+            _selectedSupply.HasFillProbability = checkBox_Supply_Probability.Checked;
+            ReFillPreview(_selectedCharacter);
+        }
+        private void checkBox_Supply_Condition_CheckedChanged(object sender, EventArgs e)
+        {
+            _selectedSupply.HasFillCondition = checkBox_Supply_Condition.Checked;
+            ReFillPreview(_selectedCharacter);
         }
         #endregion
 
-        #region Методы заполнения и очистки listBox-ов, textBox-ов, comboBox
+        #region Методы заполнения и очистки элементов
         private void ReFillCharacters(IEnumerable<Character> characters)
         {
             comboBox_Selected_Character.Items.Clear();
-            comboBox_Selected_Character.Items.AddRange(_dataCharacters.Select(character => (object)character.Id).ToArray());
+            comboBox_Selected_Character.Items.AddRange(characters.Select(character => (object)character.Id).ToArray());
         }
         private void ReFillSupplies(IEnumerable<string> suppliesName)
         {
@@ -120,8 +122,8 @@ namespace TestWork
             {
                 richTextBox_Preview.Text += $"{item.Name} = {item.Count}";
                 if (item.Addons.Count != 0) richTextBox_Preview.Text += $", {string.Join(", ", item.Addons)}";
-                if (item.Probability is not null) richTextBox_Preview.Text += $", prob={item.Probability} ";
-                if (item.Condition is not null) richTextBox_Preview.Text += $", cond={item.Condition} ";
+                if (item.HasFillProbability) richTextBox_Preview.Text += $", prob={item.Probability.ToString().Replace(',', '.')} ";
+                if (item.HasFillCondition) richTextBox_Preview.Text += $", cond={item.Condition.ToString().Replace(',', '.')} ";
                 richTextBox_Preview.Text += " \\n" + Environment.NewLine;
             }
             foreach (var include in character.Supplies.Includes)
@@ -244,62 +246,41 @@ namespace TestWork
             ReFillPreview(_selectedCharacter);
             listBox_Supplies.SelectedIndex = selectedIndexListBox;
         }
-
         private Supply CreateSupplyFromInputs()
         {
             var addons = new List<string>();
             foreach (var addon in listBox_Addons.Items)
                 addons.Add(addon.ToString());
-            if (!string.IsNullOrEmpty(textBox_Supply_Probability.Text) && !string.IsNullOrEmpty(textBox_Supply_Condition.Text))
-            {
-                var supply = new Supply(
-                    textBox_Supply_Name.Text,
-                    addons,
-                    Convert.ToDouble(textBox_Supply_Condition.Text.Replace('.', ',')),
-                    Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ',')),
-                    Convert.ToInt32(textBox_Supply_Count.Text)
-                );
-                return supply;
-            }
-            else
-            {
-                var supply = new Supply(
-                    textBox_Supply_Name.Text,
-                    addons,
-                    null,
-                    null,
-                    Convert.ToInt32(textBox_Supply_Count.Text)
-                );
-                return supply;
-            }
+
+            var condition = 1.0;
+            var probability = 1.0;
+
+            if (!string.IsNullOrEmpty(textBox_Supply_Condition.Text))
+                condition = Convert.ToDouble(textBox_Supply_Condition.Text.Replace('.', ','));
+            if (!string.IsNullOrEmpty(textBox_Supply_Probability.Text))
+                probability = Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ','));
+
+            var supply = new Supply(
+                        textBox_Supply_Name.Text,
+                        addons,
+                        checkBox_Supply_Condition.Checked,
+                        checkBox_Supply_Probability.Checked,
+                        probability,
+                        condition,
+                        Convert.ToInt32(textBox_Supply_Count.Text)
+                    );
+
+            return supply;
         }
         private bool CheckInputsForSupply()
         {
-            if (string.IsNullOrEmpty(textBox_Supply_Probability.Text))
-            {
-                if (!string.IsNullOrEmpty(textBox_Supply_Condition.Text))
-                {
-                    MessageBox.Show("Параметр 'Шанс выпадения' должен быть заполнен в соответствии с параметром 'Состояние'", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return false;
-                }
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(textBox_Supply_Condition.Text))
-                {
-                    MessageBox.Show("Параметр 'Состояние' должен быть заполнен в соответствии с параметром 'Шанс выпадения'", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    return false;
-                }
-            }
-
             try
             {
                 Convert.ToInt32(textBox_Supply_Count.Text);
-                if (!string.IsNullOrEmpty(textBox_Supply_Probability.Text) && !string.IsNullOrEmpty(textBox_Supply_Condition.Text))
-                {
+                if (!string.IsNullOrEmpty(textBox_Supply_Probability.Text) && checkBox_Supply_Probability.Checked)
                     Convert.ToDouble(textBox_Supply_Probability.Text.Replace('.', ','));
+                if (!string.IsNullOrEmpty(textBox_Supply_Condition.Text) && checkBox_Supply_Condition.Checked)
                     Convert.ToDouble(textBox_Supply_Condition.Text.Replace('.', ','));
-                }
             }
             catch
             {
@@ -321,7 +302,7 @@ namespace TestWork
             }
 
             var addonName = textBox_Addon_Name.Text;
-            if (addonName == "")
+            if (string.IsNullOrEmpty(addonName))
             {
                 MessageBox.Show("Поле для имени аддона не заполнено", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -356,7 +337,7 @@ namespace TestWork
                 MessageBox.Show("Аддон для изменения не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (addonName == "")
+            if (string.IsNullOrEmpty(addonName))
             {
                 MessageBox.Show("Поле для имени аддона не заполнено", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -417,7 +398,7 @@ namespace TestWork
             }
 
             var includePath = textBox_Include.Text;
-            if (includePath == "")
+            if (string.IsNullOrEmpty(includePath))
             {
                 MessageBox.Show("Поле для пути модуля не заполнено", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -452,7 +433,7 @@ namespace TestWork
                 MessageBox.Show("Изменяемый модуль не выбран", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (includePath == "")
+            if (string.IsNullOrEmpty(includePath))
             {
                 MessageBox.Show("Поле для пути модуля не заполнено", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
